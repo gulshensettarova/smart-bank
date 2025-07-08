@@ -1,0 +1,176 @@
+databaseChangeLog:
+  - changeSet:
+      id: 08072025_create_tables
+      author: Gulshan Sattarova
+      changes:
+        - createTable:
+            tableName: CUSTOMERS
+            columns:
+              - column:
+                  name: ID
+                  type: SERIAL
+                  remarks: "Unique customer identifier, auto-incremented primary key"
+              - column:
+                  name: FIN_CODE
+                  type: VARCHAR(20)
+                  remarks: "Unique FIN code for personal identification"
+                  constraints:
+                    unique: true
+                    nullable: false
+              - column:
+                  name: SVSN
+                  type: VARCHAR(20)
+                  remarks: "Unique SVSN number"
+                  constraints:
+                    unique: true
+                    nullable: false
+              - column:
+                  name: NAME
+                  type: VARCHAR(50)
+                  remarks: "Customer's first name"
+              - column:
+                  name: SURNAME
+                  type: VARCHAR(50)
+                  remarks: "Customer's last name"
+              - column:
+                  name: EMAIL
+                  type: VARCHAR(250)
+                  remarks: "Customer's unique email address"
+              - column:
+                  name: PASSWORD_HASH
+                  type: VARCHAR(250)
+                  remarks: "Hashed password for authentication"
+              - column:
+                  name: CREATED_AT
+                  type: TIMESTAMP
+                  remarks: "Record creation timestamp"
+              - column:
+                  name: UPDATED_AT
+                  type: TIMESTAMP
+                  remarks: "Last record update timestamp"
+              - column:
+                  name: phone_number
+                  type: VARCHAR(20)
+                  remarks: "Customer phone number"
+              - column:
+                  name: date_of_birth
+                  type: DATE
+                  remarks: "Customer date of birth"
+              - column:
+                  name: gender
+                  type: VARCHAR(10)
+                  remarks: "Customer gender"
+              - column:
+                  name: address
+                  type: TEXT
+                  remarks: "Customer address"
+              - column:
+                  name: is_verified
+                  type: BOOLEAN
+                  remarks: "Indicates if customer is verified"
+
+        - createTable:
+            tableName: ACCOUNTS
+            columns:
+              - column:
+                  name: ID
+                  type: SERIAL
+                  remarks: "Unique account identifier"
+              - column:
+                  name: CUSTOMER_ID
+                  type: INTEGER
+                  remarks: "Reference to customer who owns the account"
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_accounts_customers
+                    references: CUSTOMERS(ID)
+              - column:
+                  name: TYPE
+                  type: VARCHAR(20)
+                  remarks: "Account type (SAVINGS, CHECKING)"
+                  constraints:
+                    nullable: false
+              - column:
+                  name: BALANCE
+                  type: NUMERIC(12,2)
+                  remarks: "Current balance of the account"
+                  constraints:
+                    nullable: false
+              - column:
+                  name: CREATED_AT
+                  type: TIMESTAMP
+                  remarks: "Account creation timestamp"
+
+        - createTable:
+            tableName: TRANSACTIONS
+            columns:
+              - column:
+                  name: ID
+                  type: SERIAL
+                  remarks: "Unique transaction identifier"
+              - column:
+                  name: ACCOUNT_ID
+                  type: INTEGER
+                  remarks: "Reference to account for the transaction"
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_transactions_accounts
+                    references: ACCOUNTS(ID)
+              - column:
+                  name: TYPE
+                  type: VARCHAR(20)
+                  remarks: "Transaction type (DEPOSIT, WITHDRAW, TRANSFER)"
+                  constraints:
+                    nullable: false
+              - column:
+                  name: AMOUNT
+                  type: NUMERIC(12,2)
+                  remarks: "Transaction amount"
+                  constraints:
+                    nullable: false
+              - column:
+                  name: DESCRIPTION
+                  type: TEXT
+                  remarks: "Additional transaction details"
+              - column:
+                  name: RELATED_ACCOUNT_ID
+                  type: INTEGER
+                  remarks: "For transfers, the related account"
+                  constraints:
+                    nullable: true
+                    foreignKeyName: fk_transactions_related_account
+                    references: ACCOUNTS(ID)
+              - column:
+                  name: CREATED_AT
+                  type: TIMESTAMP
+                  remarks: "Transaction creation timestamp"
+
+        - createTable:
+            tableName: SESSIONS
+            columns:
+              - column:
+                  name: ID
+                  type: SERIAL
+                  remarks: "Unique session identifier"
+              - column:
+                  name: CUSTOMER_ID
+                  type: INTEGER
+                  remarks: "Reference to customer"
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_sessions_customers
+                    references: CUSTOMERS(ID)
+              - column:
+                  name: TOKEN
+                  type: TEXT
+                  remarks: "Authentication token"
+                  constraints:
+                    nullable: false
+              - column:
+                  name: CREATED_AT
+                  type: TIMESTAMP
+                  remarks: "Session creation timestamp"
+              - column:
+                  name: EXPIRES_AT
+                  type: TIMESTAMP
+                  remarks: "Session expiration timestamp"
